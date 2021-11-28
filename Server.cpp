@@ -32,7 +32,7 @@ public:
     {
         return socket;
     }
-
+    
     virtual long ThreadMain()
     {
         ByteArray data;
@@ -76,6 +76,11 @@ public:
         done = true;
     }
 
+    void shutdown()
+    {
+        done = true;
+    }
+
     virtual long ThreadMain()
     {   
         while (!done) {
@@ -88,24 +93,25 @@ public:
                 Socket& conn1 = *newConnection;
                 conn1.Write(ByteArray("success"));
                 std::cout << "1st Connection received. Awaiting second connection." << std::endl;
-
+                // Wait for second connection
                 Socket* secondConnection = new Socket(server.Accept());
                 Socket& conn2 = *secondConnection;
                 std::cout << "2nd Connection received. Initializing chat." << std::endl;
+                // Signal to bot clients that they should initialize their readers and writers
                 conn2.Write(ByteArray("success"));
                 conn1.Write(ByteArray("connected"));
                 sleep(1);
                 conn2.Write(ByteArray("connected"));
                 
-                // Initialize socket threads
+                // Initialize socket threads (one for each direction of communication)
                 SocketThread* thread1 = new SocketThread(conn1, conn2);
                 SocketThread* thread2 = new SocketThread(conn2, conn1);
+                // Add socket threads to the queue
                 socketThreads.push_back(thread1);
                 socketThreads.push_back(thread2);
             } catch (...) {
 
             }
-            
         }
 	    return 1;
     }
@@ -114,19 +120,18 @@ public:
 
 int main(void)
 {
-    std::cout << "I am a server." << std::endl;
+    std::cout << "SE3313 Chat - Server" << std::endl;
 	
     // Create our server
     SocketServer server(3000);    
 
     // Need a thread to perform server operations
     ServerThread serverThread(server);
-    std::cout << "Server thread created." << std::endl;
 	
     // This will wait for input to shutdown the server
     FlexWait cinWaiter(1, stdin);
-    std::cout << "Flexwait created." << std::endl;
     cinWaiter.Wait();
+    std::cin.get();
     
     // Shut down and clean up the server
     server.Shutdown();

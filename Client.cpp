@@ -30,13 +30,17 @@ public:
 		{
 			// Attempt to read from socket
 			std::cin >> input;
-			ByteArray data = ByteArray(input);
-			socket.Write(data);
-			if (input == "done") {
-				done = true;
-				break;
+			// Make sure input is not empty
+			if (input != "") {
+				ByteArray data = ByteArray(input);
+				// Send the message
+				socket.Write(data);
+				if (input == "done") {
+					done = true;
+					break;
+				}
+				std::cout << "You: " + input << std::endl;
 			}
-			std::cout << "You: " + input << std::endl;
 		}
 		return 1;
 	}
@@ -63,6 +67,7 @@ public:
 			// Attempt to read from socket
 			ByteArray data;
 			socket.Read(data);
+			// If message is "done", break the loop
 			std::string data_str = data.ToString();
 			if (data_str == "done") {
 				done = true;
@@ -78,7 +83,7 @@ public:
 int main(void)
 {
 	// Welcome the user 
-	std::cout << "SE3313 Lab 3 Client" << std::endl;
+	std::cout << "SE3313 Chat - Client" << std::endl;
 
 	// Create our socket
 	Socket socket("127.0.0.1", 3000);
@@ -108,33 +113,6 @@ int main(void)
 	{
 		sleep(1);
 	}
-	/*
-	// Get user input
-	std::string input;
-	while(true) {
-		std::cout << "Enter a message to send: ";
-		std::cin >> input;
-
-		if (input == "done") {
-			break;
-		}
-
-		ByteArray data = ByteArray(input);
-
-		if (socket.Write(data) <= 0 || socket.Read(data) <= 0) {
-			break;
-		}
-
-		// Convert to string and display
-		std::string str_result = data.ToString();
-
-		// Allow server to kill client
-		if (str_result == "done") {
-			break;
-		}
-		std::cout << str_result << std::endl;
-	}
-	*/
 
 	socket.Close();
 
