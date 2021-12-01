@@ -25,7 +25,9 @@ public:
 
     void terminateThread()
     {
+        // Terminate client threads
         other_socket.Write(ByteArray("done"));
+        // Terminate SocketThread instance
         terminate = true;
     }
 
