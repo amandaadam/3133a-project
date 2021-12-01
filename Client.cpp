@@ -86,7 +86,7 @@ int main(void)
 	std::cout << "SE3313 Chat - Client" << std::endl;
 
 	// Create our socket
-	Socket socket("127.0.0.1", 3000);
+	Socket socket("99.79.124.49", 3000);
 
 	socket.Open();
 
