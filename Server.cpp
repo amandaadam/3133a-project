@@ -44,6 +44,7 @@ public:
             // Write to the other socket
             other_socket.Write(data);
         }
+        other_socket.Write(ByteArray("done"));
         return 0;
     }
 };
